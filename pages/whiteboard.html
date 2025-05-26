@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Whiteboard</title>
+  <link rel="stylesheet" href="../styles/style.css" />
+  <script defer src="../scripts/whiteboard.js"></script>
+</head>
+<body class="whiteboard-layout">
+  <div class="toolbar">
+    <h2>Tools</h2>
+    <label>
+      Pen
+      <input type="radio" name="tool" value="pen" checked>
+    </label>
+    <label>
+      Marker
+      <input type="radio" name="tool" value="marker">
+    </label>
+    <label>
+      Eraser
+      <input type="radio" name="tool" value="eraser">
+    </label>
+    <label>
+      Ruler
+      <input type="radio" name="tool" value="ruler">
+    </label>
+    <label>
+      Divider
+      <input type="radio" name="tool" value="divider">
+    </label>
+    <label>
+      Rectangle
+      <input type="radio" name="tool" value="rectangle">
+    </label>
+    <label>
+      Square
+      <input type="radio" name="tool" value="square">
+    </label>
+    <label>
+      Circle
+      <input type="radio" name="tool" value="circle">
+    </label>
+    <label>
+      Triangle
+      <input type="radio" name="tool" value="triangle">
+    </label>
+    <label>
+      Quadrilateral
+      <input type="radio" name="tool" value="quadrilateral">
+    </label>
 
+    <div class="color-picker">
+      <label>Color Picker
+        <input type="color" id="colorPicker">
+      </label>
+      <label>Hex
+        <input type="text" id="hexInput" placeholder="#000000">
+      </label>
+      <label>RGB
+        <input type="text" id="rgbInput" placeholder="0,0,0">
+      </label>
+    </div>
+  </div>
+
+  <div class="canvas-container">
+    <canvas id="whiteboardCanvas"></canvas>
+  </div>
+</body>
+</html>
