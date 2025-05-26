@@ -9,11 +9,51 @@ let currentTool = 'pen';
 let color = '#000000';
 let lastX = 0;
 let lastY = 0;
+let shapeStartX = 0;
+let shapeStartY = 0;
+let fillShape = false;
+
+const history = [];
+let redoStack = [];
+
+function saveState() {
+  history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+  redoStack = [];
+}
+
+function undo() {
+  if (history.length > 0) {
+    redoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    const imgData = history.pop();
+    ctx.putImageData(imgData, 0, 0);
+  }
+}
+
+function redo() {
+  if (redoStack.length > 0) {
+    history.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+    const imgData = redoStack.pop();
+    ctx.putImageData(imgData, 0, 0);
+  }
+}
+
+document.getElementById('undoBtn').addEventListener('click', undo);
+document.getElementById('redoBtn').addEventListener('click', redo);
+document.getElementById('saveBtn').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'whiteboard.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
 
 document.querySelectorAll('input[name="tool"]').forEach(radio => {
   radio.addEventListener('change', (e) => {
     currentTool = e.target.value;
   });
+});
+
+document.getElementById('fillToggle').addEventListener('change', (e) => {
+  fillShape = e.target.checked;
 });
 
 const colorPicker = document.getElementById('colorPicker');
@@ -52,9 +92,72 @@ function drawLine(x1, y1, x2, y2) {
   ctx.stroke();
 }
 
+function drawRectangle(x, y, width, height) {
+  ctx.beginPath();
+  ctx.rect(x, y, width, height);
+  if (fillShape) {
+    ctx.fillStyle = color;
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
+function drawCircle(cx, cy, radius) {
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, 2 * Math.PI);
+  if (fillShape) {
+    ctx.fillStyle = color;
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
+function drawTriangle(x1, y1, x2, y2) {
+  const midX = (x1 + x2) / 2;
+  ctx.beginPath();
+  ctx.moveTo(midX, y1);
+  ctx.lineTo(x1, y2);
+  ctx.lineTo(x2, y2);
+  ctx.closePath();
+  if (fillShape) {
+    ctx.fillStyle = color;
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
+function drawQuadrilateral(x1, y1, x2, y2) {
+  const offset = Math.abs(x2 - x1) / 4;
+  ctx.beginPath();
+  ctx.moveTo(x1 + offset, y1);
+  ctx.lineTo(x2 - offset, y1);
+  ctx.lineTo(x2, y2);
+  ctx.lineTo(x1, y2);
+  ctx.closePath();
+  if (fillShape) {
+    ctx.fillStyle = color;
+    ctx.fill();
+  } else {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
 canvas.addEventListener('mousedown', (e) => {
   drawing = true;
   [lastX, lastY] = [e.offsetX, e.offsetY];
+  [shapeStartX, shapeStartY] = [e.offsetX, e.offsetY];
+  if (['pen', 'marker', 'eraser'].includes(currentTool)) saveState();
 });
 
 canvas.addEventListener('mousemove', (e) => {
@@ -66,32 +169,32 @@ canvas.addEventListener('mousemove', (e) => {
   }
 });
 
-canvas.addEventListener('mouseup', () => drawing = false);
-canvas.addEventListener('mouseleave', () => drawing = false);
-
-canvas.addEventListener('touchstart', (e) => {
-  e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  [lastX, lastY] = [touch.clientX - rect.left, touch.clientY - rect.top];
-  drawing = true;
-});
-
-canvas.addEventListener('touchmove', (e) => {
-  e.preventDefault();
+canvas.addEventListener('mouseup', (e) => {
   if (!drawing) return;
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  const x = touch.clientX - rect.left;
-  const y = touch.clientY - rect.top;
-  if (['pen', 'marker', 'eraser'].includes(currentTool)) {
-    drawLine(lastX, lastY, x, y);
-    [lastX, lastY] = [x, y];
+  drawing = false;
+  const [x, y] = [e.offsetX, e.offsetY];
+  if (!['pen', 'marker', 'eraser'].includes(currentTool)) saveState();
+
+  if (currentTool === 'ruler' || currentTool === 'divider') {
+    drawLine(shapeStartX, shapeStartY, x, y);
+  } else if (currentTool === 'rectangle') {
+    drawRectangle(shapeStartX, shapeStartY, x - shapeStartX, y - shapeStartY);
+  } else if (currentTool === 'square') {
+    const side = Math.min(Math.abs(x - shapeStartX), Math.abs(y - shapeStartY));
+    drawRectangle(shapeStartX, shapeStartY, side * Math.sign(x - shapeStartX), side * Math.sign(y - shapeStartY));
+  } else if (currentTool === 'circle') {
+    const radius = Math.hypot(x - shapeStartX, y - shapeStartY) / 2;
+    drawCircle((x + shapeStartX) / 2, (y + shapeStartY) / 2, radius);
+  } else if (currentTool === 'triangle') {
+    drawTriangle(shapeStartX, shapeStartY, x, y);
+  } else if (currentTool === 'quadrilateral') {
+    drawQuadrilateral(shapeStartX, shapeStartY, x, y);
   }
 });
 
+canvas.addEventListener('mouseleave', () => drawing = false);
+canvas.addEventListener('touchstart', () => drawing = false);
 canvas.addEventListener('touchend', () => drawing = false);
-canvas.addEventListener('touchcancel', () => drawing = false);
 
 window.addEventListener('resize', () => {
   const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -99,4 +202,3 @@ window.addEventListener('resize', () => {
   canvas.height = canvas.offsetHeight;
   ctx.putImageData(imgData, 0, 0);
 });
-
