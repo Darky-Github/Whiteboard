@@ -96,3 +96,48 @@ footer {
   padding: 1rem 0;
   font-size: 0.9rem;
 }
+
+.whiteboard-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.toolbar {
+  width: 250px;
+  background-color: #f2f2f2;
+  padding: 1rem;
+  border-right: 2px solid #ccc;
+  overflow-y: auto;
+}
+
+.toolbar h2 {
+  margin-bottom: 1rem;
+}
+
+.toolbar label {
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.color-picker input[type="text"] {
+  width: 100%;
+  margin-top: 0.3rem;
+  margin-bottom: 1rem;
+  padding: 0.3rem;
+}
+
+.canvas-container {
+  flex: 1;
+  position: relative;
+  background-color: #fff;
+}
+
+canvas#whiteboardCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
