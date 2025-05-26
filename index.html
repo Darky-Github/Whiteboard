@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Whiteboard App - Home</title>
+  <link rel="stylesheet" href="styles/style.css" />
+  <script defer src="scripts/script.js"></script>
+  <script defer src="scripts/ads.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Welcome to the Whiteboard App</h1>
+    <nav>
+      <a href="pages/whiteboard.html">Go to Whiteboard</a>
+      <a href="pages/tutorial.html">Tutorial</a>
+      <a href="https://github.com/yourrepo" target="_blank" rel="noopener noreferrer">GitHub</a>
+    </nav>
+  </header>
 
+  <main>
+    <section id="faq">
+      <h2>Frequently Asked Questions</h2>
+      <details>
+        <summary>What is this whiteboard?</summary>
+        <p>It is a client-side web app for drawing and collaboration.</p>
+      </details>
+      <details>
+        <summary>Is this free?</summary>
+        <p>Yes, it is completely free to use.</p>
+      </details>
+    </section>
+
+    <section id="ads">
+      <h2>Sponsored Ads</h2>
+      <div id="ad-container">
+        <!-- Ads dynamically inserted here by ads.js -->
+      </div>
+    </section>
+
+    <section id="donations">
+      <h2>Support Us</h2>
+      <p>If you like this project, consider donating:</p>
+      <button id="donate-btn">Donate</button>
+    </section>
+
+    <section id="support">
+      <h2>File Issues</h2>
+      <p>File issues at <a href="https://github.com/Darky-Github/Whiteboard/issues">Issues</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Darky-Github. All rights reserved.</p>
+  </footer>
+</body>
+</html>
